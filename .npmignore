@@ -1,0 +1,7 @@
+src
+docs
+coverage
+package-lock.json
+*.test.js
+.babelrc
+.gitignore
