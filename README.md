@@ -1,4 +1,4 @@
-[![view on npm](http://img.shields.io/npm/v/modapp-utils.svg)](https://www.npmjs.org/package/Utilities
+[![view on npm](http://img.shields.io/npm/v/modapp-utils.svg)](https://www.npmjs.org/package/modapp-utils)
 # ModApp Utilities
 Utility functions used by other modapp packages.
 
