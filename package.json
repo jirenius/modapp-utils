@@ -1,6 +1,6 @@
 {
   "name": "modapp-utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Utility functions used by other modapp packages.",
   "main": "./index.js",
   "scripts": {
