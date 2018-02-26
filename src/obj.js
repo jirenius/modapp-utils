@@ -44,12 +44,12 @@ let equal = function (a, b) {
 
 const TYPES = {
 	"any": {
-		default: null,
+		default: () => null,
 		assert: v => {},
 		fromString: v => v
 	},
 	"string": {
-		default: "",
+		default: () => "",
 		assert: v => {
 			if (typeof v !== "string") {
 				throw new Error("Not a string");
@@ -58,7 +58,7 @@ const TYPES = {
 		fromString: v => String(v),
 	},
 	"?string": {
-		default: null,
+		default: () => null,
 		assert: v => {
 			if (typeof v !== 'string' && v !== null) {
 				throw new Error("Not a string or null");
@@ -67,7 +67,7 @@ const TYPES = {
 		fromString: v => String(v) // Not possible to set null
 	},
 	"number": {
-		default: 0,
+		default: () => 0,
 		assert: v => {
 			if (typeof v !== 'number') {
 				throw new Error("Not a number");
@@ -82,7 +82,7 @@ const TYPES = {
 		}
 	},
 	"?number": {
-		default: null,
+		default: () => null,
 		assert: v => {
 			if (typeof v !== 'number' && v !== null) {
 				throw new Error("Not a number or null");
@@ -97,7 +97,7 @@ const TYPES = {
 		}
 	},
 	"boolean": {
-		default: false,
+		default: () => false,
 		assert: v => {
 			if (typeof v !== 'boolean') {
 				throw new Error("Not a boolean");
@@ -116,7 +116,7 @@ const TYPES = {
 		}
 	},
 	"?boolean": {
-		default: null,
+		default: () => null,
 		assert: v => {
 			if (typeof v !== 'boolean' && v !== null) {
 				throw new Error("Not a boolean or null");
@@ -137,7 +137,7 @@ const TYPES = {
 		}
 	},
 	"object": {
-		default: {},
+		default: () => ({}),
 		assert: v => {
 			if (typeof v !== 'object' || v === null) {
 				throw new Error("Not an object");
@@ -148,7 +148,7 @@ const TYPES = {
 		}
 	},
 	"?object": {
-		default: null,
+		default: () => null,
 		assert: v => {
 			if (typeof v !== 'object') {
 				throw new Error("Not an object or null");
@@ -159,7 +159,7 @@ const TYPES = {
 		}
 	},
 	"function": {
-		default: function () {},
+		default: () => function () {},
 		assert: v => {
 			if (typeof v !== 'function') {
 				throw new Error("Not a function");
@@ -170,7 +170,7 @@ const TYPES = {
 		}
 	},
 	"?function": {
-		default: null,
+		default: () => null,
 		assert: v => {
 			if (typeof v !== 'function' && v !== null) {
 				throw new Error("Not a function or null");
@@ -220,7 +220,7 @@ let update = function (target, source, def, strict = true) {
 		if (!target.hasOwnProperty(tkey)) {
 			updated = true;
 			updateObj[tkey] = undefined;
-			target[tkey] = d.hasOwnProperty('default') ? d.default : t.default;
+			target[tkey] = d.hasOwnProperty('default') ? d.default : t.default();
 		}
 
 		// Check if source has value for the property. If not, continue to next property.
