@@ -4,7 +4,8 @@
   "description": "Utility functions used by other modapp packages.",
   "main": "./index.js",
   "scripts": {
-    "build": "babel src --out-dir ./",
+    "build": "npm run eslint && npm run babel",
+    "babel": "babel src --out-dir ./",
     "eslint": "eslint src/**/*.js"
   },
   "repository": {
