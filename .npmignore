@@ -3,5 +3,6 @@ docs
 coverage
 package-lock.json
 *.test.js
+.eslintrc
 .babelrc
 .gitignore
