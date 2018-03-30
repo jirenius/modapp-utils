@@ -47,21 +47,21 @@ let slideDone = function(el, show, callback) {
 
 
 let invert = function(v, ok) {
-	return ok ? 1-v : v;
+	return ok ? 1 - v : v;
 };
 
 let easeOut = function(p) {
-	return 1 - (1-p) * (1-p);
+	return 1 - (1 - p) * (1 - p);
 };
 
 let unstyledCbs = null;
 let getUnstyledHeight = function(el, cb) {
 	if (unstyledCbs !== null) {
-		unstyledCbs.push([el, cb, '', 0]);
+		unstyledCbs.push([ el, cb, '', 0 ]);
 		return;
 	}
 
-	unstyledCbs = [[el, cb, '', 0]];
+	unstyledCbs = [[ el, cb, '', 0 ]];
 	window.requestAnimationFrame(() => {
 		let cs = unstyledCbs;
 		unstyledCbs = null;
@@ -90,11 +90,12 @@ let getUnstyledHeight = function(el, cb) {
 
 /**
  * Fades the opacity of an element with the duration based on the elements current opacity.
- * @param {HTMLElement} element HTML element to fade.
+ * @param {HTMLElement} el HTML element to fade.
  * @param {number} opacity Opacity to fade to.
  * @param {object} [opt] Optional parameters
  * @param {number} [opt.duration] Optional fade duration in milliseconds, measured when going from 0 to 1 opacity.
  * @param {function} [opt.callback] Optional callback function once the animation is complete.
+ * @returns {object} Animation token
  */
 export let fade = function(el, opacity, opt = {}) {
 	let callback = opt.callback || null;
@@ -106,7 +107,7 @@ export let fade = function(el, opacity, opt = {}) {
 		0,
 		duration,
 		function(p) {
-			el.style.opacity = p*opacity + (1-p)*origin;
+			el.style.opacity = p * opacity + (1 - p) * origin;
 		},
 		function() {
 			el.style.opacity = opacity;
@@ -119,30 +120,31 @@ export let fade = function(el, opacity, opt = {}) {
 
 /**
  * Swipes an element out to the side while fading it out.
- * @param {HTMLElement} element HTML element to swipe out.
+ * @param {HTMLElement} el HTML element to swipe out.
  * @param {number} direction Direction to swipe. -1 for left, 0 for fade only, and 1 for right.
  * @param {object=} opt Optional parameters
  * @param {number=} opt.duration Optional fade duration in milliseconds.
  * @param {number=} opt.distance Optional swipe distance in pixels.
  * @param {number=} opt.reset Optional reset flag. If true, opacity and position will be reset. If false, animation will continue from current position and opacity. Default is true.
  * @param {function=} opt.callback Optional callback function once the animation is complete.
+ * @returns {object} Animation token
  */
-export let swipeOut = function(element, direction, opt = {}) {
+export let swipeOut = function(el, direction, opt = {}) {
 	let callback = opt.callback || null;
 	let startProgress = 0;
 	let basePos = 0;
 	let dirDist = direction * (opt.distance || SWIPE_DISTANCE);
-	if( opt.reset !== undefined ? opt.reset : true ) {
-		element.style.opacity = '';
-		element.style.left = '';
+	if (opt.reset !== undefined ? opt.reset : true) {
+		el.style.opacity = '';
+		el.style.left = '';
 	} else {
-		startProgress = element.style.opacity ? 1-parseFloat(element.style.opacity) : 0;
-		if( startProgress == 1 ) {
-			if( callback ) callback();
+		startProgress = el.style.opacity ? 1 - parseFloat(el.style.opacity) : 0;
+		if (startProgress == 1) {
+			if (callback) callback();
 			return null;
 		}
 		// The assumed position from where the swipe animation started
-		basePos = (element.style.left ? parseFloat(element.style.left) : 0) - dirDist * startProgress * startProgress;
+		basePos = (el.style.left ? parseFloat(el.style.left) : 0) - dirDist * startProgress * startProgress;
 	}
 
 	let duration = opt.duration || FADE_DURATION;
@@ -150,16 +152,16 @@ export let swipeOut = function(element, direction, opt = {}) {
 	let token = {};
 	let step = function(timestamp) {
 		// Calculate start time relative to start opacity.
-		if( !start ) start = timestamp - duration * startProgress;
+		if (!start) start = timestamp - duration * startProgress;
 		let progress = (timestamp - start) / duration;
-		if( progress >= 1 ) {
-			element.style.opacity = 0;
-			if( callback ) callback();
+		if (progress >= 1) {
+			el.style.opacity = 0;
+			if (callback) callback();
 			return;
 		}
 
-		element.style.opacity = 1-progress;
-		element.style.left = (basePos + dirDist * progress * progress) + 'px';
+		el.style.opacity = 1 - progress;
+		el.style.left = (basePos + dirDist * progress * progress) + 'px';
 		token.requestId = window.requestAnimationFrame(step);
 	};
 
@@ -169,30 +171,31 @@ export let swipeOut = function(element, direction, opt = {}) {
 
 /**
  * Swipes an element in from the side while fading it in.
- * @param {HTMLElement} element HTML element to swipe in.
+ * @param {HTMLElement} el HTML element to swipe in.
  * @param {number} direction Direction to swipe. -1 for left, 0 for fade only, and 1 for right. Ignored if opt.reset is false.
  * @param {object=} opt Optional parameters
  * @param {number=} opt.duration Optional fade duration in milliseconds.
  * @param {number=} opt.distance Optional swipe distance in pixels.
  * @param {number=} opt.reset Optional reset flag. If true, opacity and position will be reset. If false, animation will continue from current position and opacity. Default is true.
  * @param {function=} opt.callback Optional callback function once the animation is complete.
+ * @returns {object} Animation token
  */
-export let swipeIn = function(element, direction, opt = {}) {
+export let swipeIn = function(el, direction, opt = {}) {
 	let callback = opt.callback || null;
 	let startProgress = 0;
 	let dirDist = direction * (opt.distance || SWIPE_DISTANCE);
 	let basePos = -dirDist;
 
-	if( opt.reset !== undefined ? opt.reset : true ) {
-		element.style.opacity = 0;
+	if (opt.reset !== undefined ? opt.reset : true) {
+		el.style.opacity = 0;
 	} else {
-		startProgress = element.style.opacity ? parseFloat(element.style.opacity) : 1;
-		if( startProgress == 1 ) {
-			if( callback ) callback();
+		startProgress = el.style.opacity ? parseFloat(el.style.opacity) : 1;
+		if (startProgress == 1) {
+			if (callback) callback();
 			return null;
 		}
 		// Set direction distance to the negative of current position
-		dirDist = (element.style.left ? -parseFloat(element.style.left) : 0);
+		dirDist = (el.style.left ? -parseFloat(el.style.left) : 0);
 		// The assumed position from where the swipe animation started
 		basePos = dirDist * startProgress * (2 - startProgress) - dirDist;
 	}
@@ -202,17 +205,17 @@ export let swipeIn = function(element, direction, opt = {}) {
 	let token = {};
 	let step = function(timestamp) {
 		// Calculate start time relative to start opacity.
-		if( !start ) start = timestamp - duration * startProgress;
+		if (!start) start = timestamp - duration * startProgress;
 		let progress = (timestamp - start) / duration;
-		if( progress >= 1 ) {
-			element.style.opacity = '';
-			element.style.left = '';
-			if( callback ) callback();
+		if (progress >= 1) {
+			el.style.opacity = '';
+			el.style.left = '';
+			if (callback) callback();
 			return;
 		}
 
-		element.style.opacity = progress;
-		element.style.left = (basePos + dirDist * progress * (2 - progress)) + 'px';
+		el.style.opacity = progress;
+		el.style.left = (basePos + dirDist * progress * (2 - progress)) + 'px';
 		token.requestId = window.requestAnimationFrame(step);
 	}.bind(this);
 
@@ -222,14 +225,16 @@ export let swipeIn = function(element, direction, opt = {}) {
 
 /**
  * Slides down an element while while fading it in.
- * @param {HTMLElement} element HTML element to slide down.
+ * @param {HTMLElement} el HTML element to slide up/down.
+ * @param {boolean} show Flag if element should be slide up (show), will slide down (hide) if false.
  * @param {object} [opt] Optional parameters
  * @param {number} [opt.duration] Optional fade duration in milliseconds.
  * @param {number} [opt.reset] Optional reset flag. If true, opacity and position will be reset. If false, animation will continue from current height and opacity. Default is true.
  * @param {function} [opt.callback] Optional callback function once the animation is complete.
+ * @returns {object} Animation token
  */
 export let slideVertical = function (el, show, opt = {}) {
-	let token = {requestId: true};
+	let token = { requestId: true };
 	let progress = 0;
 	let origin, target, height, e;
 	let reset = opt.reset !== undefined ? opt.reset : true;
@@ -251,7 +256,7 @@ export let slideVertical = function (el, show, opt = {}) {
 			progress = invert(
 				el.style.opacity
 					? parseFloat(el.style.opacity)
-					: ( el.style.display === 'none'
+					: (el.style.display === 'none'
 						? 0
 						: 1
 					),
@@ -270,7 +275,7 @@ export let slideVertical = function (el, show, opt = {}) {
 			height = el.style.display === 'none'
 				? 0
 				: el.offsetHeight;
-			origin = (height - (e*target)) / (1-e);
+			origin = (height - (e * target)) / (1 - e);
 		}
 
 		el.style.display = '';
@@ -281,8 +286,8 @@ export let slideVertical = function (el, show, opt = {}) {
 			opt.duration || FADE_DURATION,
 			p => {
 				e = easeOut(p);
-				el.style.opacity = show ? p : 1-p;
-				el.style.height = (e*target + (1-e)*origin) + 'px';
+				el.style.opacity = show ? p : 1 - p;
+				el.style.height = (e * target + (1 - e) * origin) + 'px';
 			},
 			() => slideDone(el, show, opt.callback),
 			token

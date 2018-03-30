@@ -42,7 +42,7 @@ export let create = function (tagName, opt) {
 
 		o = opt.children;
 		if (o) {
-			for( var i = 0; i < o.length; i++ ) {
+			for (var i = 0; i < o.length; i++) {
 				el.appendChild(o[i]);
 			}
 		} else if (opt.text) {

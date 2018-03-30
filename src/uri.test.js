@@ -13,7 +13,7 @@ describe('uri', () => {
 
 		it('parses single level single value: ?foo=bar', () => {
 			setSearch("?foo=bar");
-			expect(uri.getQuery()).toEqual({"foo":"bar"});
+			expect(uri.getQuery()).toEqual({ "foo": "bar" });
 		});
 
 		it('parses single level multiple values: ?foo=bar&boo=far', () => {

@@ -4,17 +4,19 @@
   "description": "Utility functions used by other modapp packages.",
   "main": "./index.js",
   "scripts": {
-    "build": "babel src --out-dir ./"
+    "build": "babel src --out-dir ./",
+    "eslint": "eslint src/**/*.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jirenius/modapp-utils"
   },
-  "author": "Samuel Jirénius <samuel@jirenius.se>",
+  "author": "Samuel Jirénius <samuel@jirenius.com>",
   "license": "MIT",
   "homepage": "https://github.com/jirenius/modapp-utils",
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.1"
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.19.1"
   }
 }

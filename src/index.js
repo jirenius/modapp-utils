@@ -8,4 +8,4 @@ import * as elem from './elem.js';
 import * as obj from './obj.js';
 import * as uri from './uri.js';
 
-export {anim, array, elem, obj, uri};
+export { anim, array, elem, obj, uri };

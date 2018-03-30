@@ -7,6 +7,7 @@
  * object using dot-separation for the namespace.<br>
  * Eg. ?module.login.user=username => {module: {login: {user: "username"}}}
  * @param {string} namespace Dot-separated namespace to use as root.
+ * @returns {object} Parameter key/value object.
  */
 let getQuery = function(namespace) {
 	if (typeof(window) === 'undefined' || !window.location) return {};
@@ -14,10 +15,10 @@ let getQuery = function(namespace) {
 	var match,
 		part,
 		search = /([^&=]+)=?([^&]*)/g,
-		query  = window.location.search.substring(1).replace(/\+/g, " "),
+		query = window.location.search.substring(1).replace(/\+/g, " "),
 		params = {};
 
-	namespace = (namespace || "").replace(/([^\.])$/, '$1.');
+	namespace = (namespace || "").replace(/([^.])$/, '$1.');
 
 	while ((match = search.exec(query)) !== null) {
 		var key = decodeURIComponent(match[1]);
@@ -30,7 +31,7 @@ let getQuery = function(namespace) {
 			part = parts[i];
 			if (!part) continue;
 
-			if (i == parts.length-1) {
+			if (i == parts.length - 1) {
 				o[part] = decodeURIComponent(match[2]);
 			} else {
 				if (typeof o[part] !== 'object') o[part] = {};
@@ -42,4 +43,4 @@ let getQuery = function(namespace) {
 	return params;
 };
 
-export {getQuery};
+export { getQuery };

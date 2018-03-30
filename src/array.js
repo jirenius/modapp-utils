@@ -7,7 +7,7 @@
  * @param {Array} arr Array to search in
  * @param {*} item Item to search for
  * @param {function} compare Compare function
- * @returns Index of a matching item in the array if one exists, otherwise the bitwise complement of the index where the item belongs
+ * @returns {number} Index of a matching item in the array if one exists, otherwise the bitwise complement of the index where the item belongs
  */
 export let binarySearch = function (arr, item, compare) {
 	var l = 0,
