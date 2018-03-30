@@ -5,7 +5,7 @@
 const FADE_DURATION = 200;
 const SWIPE_DISTANCE = 64;
 
-let animate = function(progress, duration, step, done) {
+let animate = function(progress, duration, step, done, token) {
 	if (progress === 1) {
 		done();
 		return null;
@@ -13,7 +13,7 @@ let animate = function(progress, duration, step, done) {
 
 	let startProgress = progress;
 	let start = null;
-	let token = {};
+	token = token || {};
 	let cb = function(timestamp) {
 		if (!start) {
 			start = timestamp - duration * startProgress;
@@ -54,12 +54,38 @@ let easeOut = function(p) {
 	return 1 - (1-p) * (1-p);
 };
 
-let getUnstyledHeight = function(el) {
-	let css = el.style.cssText;
-	el.style.cssText = '';
-	let height = el.offsetHeight;
-	el.style.cssText = css;
-	return height;
+let unstyledCbs = null;
+let getUnstyledHeight = function(el, cb) {
+	if (unstyledCbs !== null) {
+		unstyledCbs.push([el, cb, '', 0]);
+		return;
+	}
+
+	unstyledCbs = [[el, cb, '', 0]];
+	window.requestAnimationFrame(() => {
+		let cs = unstyledCbs;
+		unstyledCbs = null;
+		// Reset all styles
+		for (let c of cs) {
+			c[2] = c[0].style.cssText;
+			c[0].style.cssText = '';
+		}
+
+		// Check calculated heights
+		for (let c of cs) {
+			c[3] = c[0].offsetHeight;
+		}
+
+		// Reset all styles
+		for (let c of cs) {
+			c[0].style.cssText = c[2];
+		}
+
+		// Call all callbacks
+		for (let c of cs) {
+			c[1](c[3]);
+		}
+	});
 };
 
 /**
@@ -78,7 +104,7 @@ export let fade = function(el, opacity, opt = {}) {
 	let duration = (opt.duration || FADE_DURATION) * Math.abs(origin - opacity);
 	return animate(
 		0,
-		(opt.duration || FADE_DURATION) * Math.abs(origin - opacity),
+		duration,
 		function(p) {
 			el.style.opacity = p*opacity + (1-p)*origin;
 		},
@@ -135,7 +161,7 @@ export let swipeOut = function(element, direction, opt = {}) {
 		element.style.opacity = 1-progress;
 		element.style.left = (basePos + dirDist * progress * progress) + 'px';
 		token.requestId = window.requestAnimationFrame(step);
-	}.bind(this);
+	};
 
 	token.requestId = window.requestAnimationFrame(step);
 	return token;
@@ -203,53 +229,67 @@ export let swipeIn = function(element, direction, opt = {}) {
  * @param {function} [opt.callback] Optional callback function once the animation is complete.
  */
 export let slideVertical = function (el, show, opt = {}) {
+	let token = {requestId: true};
 	let progress = 0;
 	let origin, target, height, e;
+	let reset = opt.reset !== undefined ? opt.reset : true;
+	let f = reset || show
+		? getUnstyledHeight
+		: (el, cb) => cb(0);
 
-	if (opt.reset !== undefined ? opt.reset : true) {
-		el.style.opacity = show ? 0 : 1;
-		target = show ? getUnstyledHeight(el) : 0;
-		origin = show ? 0 : getUnstyledHeight(el);
-		el.style.height = origin + 'px';
-	} else {
-		progress = invert(
-			el.style.opacity
-				? parseFloat(el.style.opacity)
-				: ( el.style.display === 'none'
-					? 0
-					: 1
-				),
-			!show
-		);
-
-		if (progress === 1) {
-			return slideDone(el, show, opt.callback);
+	f(el, unstyledHeight => {
+		if (!token.requestId) {
+			return;
 		}
 
-		target = show
-			? getUnstyledHeight(el)
-			: 0;
+		if (reset) {
+			el.style.opacity = show ? 0 : 1;
+			target = show ? unstyledHeight : 0;
+			origin = show ? 0 : unstyledHeight;
+			el.style.height = origin + 'px';
+		} else {
+			progress = invert(
+				el.style.opacity
+					? parseFloat(el.style.opacity)
+					: ( el.style.display === 'none'
+						? 0
+						: 1
+					),
+				!show
+			);
 
-		e = easeOut(progress);
-		height = el.style.display === 'none'
-			? 0
-			: el.offsetHeight;
-		origin = (height - (e*target)) / (1-e);
-	}
+			if (progress === 1) {
+				return slideDone(el, show, opt.callback);
+			}
 
-	el.style.display = '';
-	el.style.overflow = 'hidden';
+			target = show
+				? unstyledHeight
+				: 0;
 
-	return animate(
-		progress,
-		opt.duration || FADE_DURATION,
-		p => {
-			e = easeOut(p);
-			el.style.opacity = show ? p : 1-p;
-			el.style.height = (e*target + (1-e)*origin) + 'px';
-		},
-		() => slideDone(el, show, opt.callback)
-	);
+			e = easeOut(progress);
+			height = el.style.display === 'none'
+				? 0
+				: el.offsetHeight;
+			origin = (height - (e*target)) / (1-e);
+		}
+
+		el.style.display = '';
+		el.style.overflow = 'hidden';
+
+		animate(
+			progress,
+			opt.duration || FADE_DURATION,
+			p => {
+				e = easeOut(p);
+				el.style.opacity = show ? p : 1-p;
+				el.style.height = (e*target + (1-e)*origin) + 'px';
+			},
+			() => slideDone(el, show, opt.callback),
+			token
+		);
+	});
+
+	return token;
 };
 
 /**
@@ -259,7 +299,9 @@ export let slideVertical = function (el, show, opt = {}) {
  */
 export let stop = function(token) {
 	if (token && token.requestId) {
-		window.cancelAnimationFrame(token.requestId);
+		if (token.requestId !== true) {
+			window.cancelAnimationFrame(token.requestId);
+		}
 		delete token.requestId;
 		return true;
 	}
