@@ -2,7 +2,8 @@ src
 docs
 coverage
 package-lock.json
-*.test.js
+yarn.lock
+rollup.config.js
 .eslintrc
 .babelrc
 .gitignore

@@ -5,4 +5,8 @@
 
 # Build files.
 # Put in root folder
+/dist
+/lib
+/*.tgz
 /*.js
+!/rollup.config.js
