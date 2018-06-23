@@ -5,6 +5,17 @@
   "main": "lib/index.js",
   "module": "index.js",
   "jsnext:main": "index.js",
+  "files": [
+    "dist",
+    "lib",
+    "src",
+    "index.js",
+    "anim.js",
+    "array.js",
+    "elem.js",
+    "obj.js",
+    "uri.js"
+  ],
   "scripts": {
     "clean": "rimraf lib dist index.js anim.js array.js elem.js obj.js uri.js",
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
