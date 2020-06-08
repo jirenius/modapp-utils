@@ -55,7 +55,7 @@ let easeOut = function(p) {
 };
 
 let unstyledCbs = null;
-let getUnstyledHeight = function(el, cb) {
+let getUnstyledDimensions = function(el, cb) {
 	if (unstyledCbs !== null) {
 		unstyledCbs.push([ el, cb, '', 0 ]);
 		return;
@@ -74,6 +74,7 @@ let getUnstyledHeight = function(el, cb) {
 		// Check calculated heights
 		for (let c of cs) {
 			c[3] = c[0].offsetHeight;
+			c[4] = c[0].offsetWidth;
 		}
 
 		// Reset all styles
@@ -83,7 +84,7 @@ let getUnstyledHeight = function(el, cb) {
 
 		// Call all callbacks
 		for (let c of cs) {
-			c[1](c[3]);
+			c[1](c[3], c[4]);
 		}
 	});
 };
@@ -224,7 +225,7 @@ export let swipeIn = function(el, direction, opt = {}) {
 };
 
 /**
- * Slides down an element while while fading it in.
+ * Slides an element vertically while fading it in.
  * @param {HTMLElement} el HTML element to slide up/down.
  * @param {boolean} show Flag if element should be slide up (show), will slide down (hide) if false.
  * @param {object} [opt] Optional parameters
@@ -233,25 +234,58 @@ export let swipeIn = function(el, direction, opt = {}) {
  * @param {function} [opt.callback] Optional callback function once the animation is complete.
  * @returns {object} Animation token
  */
-export let slideVertical = function (el, show, opt = {}) {
+export let slideVertical = function (el, show, opt) {
+	return internalSlide(false, el, show, opt);
+};
+
+/**
+ * Slides an element horizontally while fading it in.
+ * @param {HTMLElement} el HTML element to slide up/down.
+ * @param {boolean} show Flag if element should be slide up (show), will slide down (hide) if false.
+ * @param {object} [opt] Optional parameters
+ * @param {number} [opt.duration] Optional fade duration in milliseconds.
+ * @param {number} [opt.reset] Optional reset flag. If true, opacity and position will be reset. If false, animation will continue from current height and opacity. Default is true.
+ * @param {function} [opt.callback] Optional callback function once the animation is complete.
+ * @returns {object} Animation token
+ */
+export let slideHorizontal = function(el, show, opt) {
+	return internalSlide(true, el, show, opt);
+};
+
+/**
+ * Slides an element horizontally while fading it in.
+ * @param {boolean} hori Flag if slide should be horizontal instead of vertical.
+ * @param {HTMLElement} el HTML element to slide up/down.
+ * @param {boolean} show Flag if element should be slide up (show), will slide down (hide) if false.
+ * @param {object} [opt] Optional parameters
+ * @param {number} [opt.duration] Optional fade duration in milliseconds.
+ * @param {number} [opt.reset] Optional reset flag. If true, opacity and position will be reset. If false, animation will continue from current height and opacity. Default is true.
+ * @param {function} [opt.callback] Optional callback function once the animation is complete.
+ * @returns {object} Animation token
+ * @private
+ */
+let internalSlide = function (hori, el, show, opt = {}) {
 	let token = { requestId: true };
 	let progress = 0;
-	let origin, target, height, e;
+	let origin, target, d, e;
 	let reset = opt.reset !== undefined ? opt.reset : true;
 	let f = reset || show
-		? getUnstyledHeight
-		: (el, cb) => cb(0);
+		? getUnstyledDimensions
+		: (el, cb) => cb(0, 0);
+	let prop = hori ? 'width' : 'height';
+	let offsetProp = hori ? 'offsetWidth' : 'offsetHeight';
 
-	f(el, unstyledHeight => {
+	f(el, (unstyledHeight, unstyledWidth) => {
 		if (!token.requestId) {
 			return;
 		}
+		let dim = hori ? unstyledWidth : unstyledHeight;
 
 		if (reset) {
 			el.style.opacity = show ? 0 : 1;
-			target = show ? unstyledHeight : 0;
-			origin = show ? 0 : unstyledHeight;
-			el.style.height = origin + 'px';
+			target = show ? dim : 0;
+			origin = show ? 0 : dim;
+			el.style[prop] = origin + 'px';
 		} else {
 			progress = invert(
 				el.style.opacity
@@ -268,14 +302,14 @@ export let slideVertical = function (el, show, opt = {}) {
 			}
 
 			target = show
-				? unstyledHeight
+				? dim
 				: 0;
 
 			e = easeOut(progress);
-			height = el.style.display === 'none'
+			d = el.style.display === 'none'
 				? 0
-				: el.offsetHeight;
-			origin = (height - (e * target)) / (1 - e);
+				: el[offsetProp];
+			origin = (d - (e * target)) / (1 - e);
 		}
 
 		el.style.display = '';
@@ -287,7 +321,7 @@ export let slideVertical = function (el, show, opt = {}) {
 			p => {
 				e = easeOut(p);
 				el.style.opacity = show ? p : 1 - p;
-				el.style.height = (e * target + (1 - e) * origin) + 'px';
+				el.style[prop] = (e * target + (1 - e) * origin) + 'px';
 			},
 			() => slideDone(el, show, opt.callback),
 			token

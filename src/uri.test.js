@@ -3,9 +3,12 @@ import * as uri from './uri.js';
 describe('uri', () => {
 
 	let setSearch = function(val) {
-		Object.defineProperty(window.location, 'search', {
+		global.window = Object.create(window);
+		Object.defineProperty(window, 'location', {
 			writable: true,
-			value: val
+			value: {
+				search: val
+			}
 		});
 	};
 
