@@ -8,7 +8,6 @@
   "files": [
     "dist",
     "lib",
-    "src",
     "index.js",
     "anim.js",
     "array.js",
@@ -21,10 +20,11 @@
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir ./",
-    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development node_modules/.bin/rollup src/index.js --config --sourcemap --file dist/modapp-utils.js",
+    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development rollup src/index.js --config --sourcemap --file dist/modapp-utils.js",
     "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup src/index.js --config --file dist/modapp-utils.min.js",
     "eslint": "eslint src/**/*.js",
-    "test": "npm run eslint"
+    "jest": "jest src --coverage",
+    "test": "npm run eslint && npm run jest"
   },
   "repository": {
     "type": "git",
@@ -34,16 +34,16 @@
   "license": "MIT",
   "homepage": "https://github.com/jirenius/modapp-utils",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
-    "cross-env": "^5.2.0",
-    "eslint": "^4.19.1",
-    "rimraf": "^2.6.2",
-    "rollup": "^0.60.7",
-    "rollup-plugin-babel": "^3.0.5",
-    "rollup-plugin-commonjs": "^9.1.3",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-uglify": "^4.0.0"
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "@rollup/plugin-babel": "^5.0.3",
+    "babel-jest": "^26.0.1",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.2.0",
+    "jest": "^26.0.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.14.0",
+    "rollup-plugin-terser": "^6.1.0"
   }
 }
