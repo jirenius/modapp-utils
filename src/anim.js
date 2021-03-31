@@ -103,7 +103,7 @@ export let fade = function(el, opacity, opt = {}) {
 	let origin = el.style.opacity ? Number(el.style.opacity) : 1;
 
 	// Calculate start time relative to start opacity.
-	let duration = (opt.duration || FADE_DURATION) * Math.abs(origin - opacity);
+	let duration = (typeof opt.duration == 'number' ? opt.duration : FADE_DURATION) * Math.abs(origin - opacity);
 	return animate(
 		0,
 		duration,
@@ -148,7 +148,7 @@ export let swipeOut = function(el, direction, opt = {}) {
 		basePos = (el.style.left ? parseFloat(el.style.left) : 0) - dirDist * startProgress * startProgress;
 	}
 
-	let duration = opt.duration || FADE_DURATION;
+	let duration = typeof opt.duration == 'number' ? opt.duration : FADE_DURATION;
 	let start = null;
 	let token = {};
 	let step = function(timestamp) {
@@ -201,7 +201,7 @@ export let swipeIn = function(el, direction, opt = {}) {
 		basePos = dirDist * startProgress * (2 - startProgress) - dirDist;
 	}
 
-	let duration = opt.duration || FADE_DURATION;
+	let duration = typeof opt.duration == 'number' ? opt.duration : FADE_DURATION;
 	let start = null;
 	let token = {};
 	let step = function(timestamp) {
@@ -317,7 +317,7 @@ let internalSlide = function (hori, el, show, opt = {}) {
 
 		animate(
 			progress,
-			opt.duration || FADE_DURATION,
+			typeof opt.duration == 'number' ? opt.duration : FADE_DURATION,
 			p => {
 				e = easeOut(p);
 				el.style.opacity = show ? p : 1 - p;
