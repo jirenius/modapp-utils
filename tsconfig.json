@@ -1,0 +1,9 @@
+{
+    "include": [
+        "index.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.test.js"
+    ]
+}
