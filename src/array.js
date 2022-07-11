@@ -34,7 +34,7 @@ export let binarySearch = function (arr, item, compare) {
  * @param {*} item Item to insert
  * @param {function} compare Compare function
  * @param {boolean=} duplicate True if a duplicate value should be inserted, false if no insert should be made.
- * @return {number} The index of where in the array the item was insert, or the duplicate was found.
+ * @return {number} The index of where in the array the item was inserted, or the duplicate was found.
  */
 export let binaryInsert = function (arr, item, compare, duplicate = false) {
 	var i = binarySearch(arr, item, compare);

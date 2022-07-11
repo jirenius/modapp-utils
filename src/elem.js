@@ -99,7 +99,7 @@ export let remove = function(child, opt) {
 /**
  * Empties an element of all child nodes.
  * @param {?HTMLElement} element Element
- * @returns {?HTMLElement} ELement.
+ * @returns {?HTMLElement} Element.
  */
 export let empty = function(element) {
 	if (!element) {
